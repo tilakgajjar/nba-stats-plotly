@@ -12,6 +12,7 @@ install Node.js
 ### Installing
 
 ```
+mkdir repository-name
 git clone https://github.com/tilakz/nba-stats-plotly.git
 cd repository-name
 npm install
