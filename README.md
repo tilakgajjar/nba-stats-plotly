@@ -1,6 +1,6 @@
 # Project Title
 
-Web application build with React and Redux to show statistics with bar and scatter plot
+Web application build with React and Redux to show statistics for NBA players with bar and scatter plot
 
 ## Getting Started
 
