@@ -7,7 +7,7 @@ function checkStatus(response) {
   }
   const error = new Error(`HTTP Error ${response.statusText}`);
   error.status = response.statusText;
-  error.response = response; // eslint-disable-line no-console
+  error.response = response; 
   throw error;
 }
 
@@ -103,7 +103,7 @@ headers.append('Accept', 'application/json')
 export function* fetchAllPlayer(action) {
 
   try{
-    const playerList = yield call(api, `http://localhost:5000/player?api_key=7ntkUYD9OSIu1x4vFhQMXJoGBWLiAVK0&first_name=&last_name=`);
+    const playerList = yield call(api, `http://localhost:5000/player?api_key=T8bcils9hULxNAY0eK3n4HuJ7dkQy6Zf&first_name=&last_name=`);
     const finalList = playerList.map(person => ({ key: person.id, value: `${person.first_name} ${person.last_name}`, first_name: person.first_name, last_name: person.last_name, text: person.player_name }))
     yield put({type: TYPES.FETCH_ALL_PLAYER_SUCCESS, data: finalList});
 
@@ -122,7 +122,7 @@ export function* fetchPerson(action) {
         yield put({type: TYPES.SHOW_INPUT_ERROR, err});
 
       }else {
-        const person = yield call(api, `http://localhost:5000/player?api_key=7ntkUYD9OSIu1x4vFhQMXJoGBWLiAVK0&first_name=${action.fname}&last_name=${action.lname}`);
+        const person = yield call(api, `http://localhost:5000/player?api_key=T8bcils9hULxNAY0eK3n4HuJ7dkQy6Zf&first_name=${action.fname}&last_name=${action.lname}`);
         yield put({type: TYPES.FETCH_PLAYER_ID_SUCCESS, data: person});
 
         let pl_id = person.map(person => person.id);
@@ -145,7 +145,7 @@ export function* fetchPerson(action) {
 export function* fetchStats(action) {
 
   try{
-    const stats = yield call(api, `http://localhost:5000/boxscore?api_key=7ntkUYD9OSIu1x4vFhQMXJoGBWLiAVK0&player_id=${action.data.id}&year=${action.data.year}`);
+    const stats = yield call(api, `http://localhost:5000/boxscore?api_key=T8bcils9hULxNAY0eK3n4HuJ7dkQy6Zf&player_id=${action.data.id}&year=${action.data.year}`);
     const statsWithId = { id: action.data.id, name: action.data.name, year: action.data.year, stats: stats}
 
     yield put({type: TYPES.FETCH_PLAYER_STATS_SUCCESS, data: statsWithId});

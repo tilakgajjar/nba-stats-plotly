@@ -1,0 +1,113 @@
+const player_stats = [
+  {
+    name: 'lebron',
+    stats: {
+      ppg: null,
+      apg: null,
+      rpn: null,
+      ...
+    }
+  }
+]
+
+name = []
+statastics = []
+console.log(playerInfo, 'playerInfo')
+let items =  playerInfo.stats.map((item)=> { return item; });
+
+items.map((item) => {
+  console.log('map', item)
+  // const name = item.name + ' ' + item.year
+
+  name.push(item.name + ' ' + item.year);
+
+  const packageStats = (stat, item) => {
+    stats = {
+      index: item.index,
+      id: item.id,
+      name: item.name,
+      year: item.year,
+      stat: item.stats[stat]
+    }
+    return stats
+  };
+
+  statistics.push(packageStats(str, item))
+  }
+}, []);
+
+
+-----
+const { playerInfo } = this.props
+
+str = playerInfo.statsBar
+name = []
+statastics = []
+
+let items =  playerInfo.stats.map((item)=> { return item; });
+
+items.map((item) => {
+  name.push(item.name + ' ' + item.year);
+  switch (str) {
+    case 'ppg':
+      statastics.push({index: item.index, id: item.id, name: item.name, year: item.year, stat: item.stats[0].ppg})
+      break;
+    case 'apg':
+      statastics.push({index: item.index, id: item.id, name: item.name, year: item.year, stat: item.stats[0].apg})
+      break;
+    case 'rpg':
+      statastics.push({index: item.index, id: item.id, name: item.name, year: item.year, stat: item.stats[0].rpg})
+      break;
+    case 'fg%':
+      statastics.push({index: item.index, id: item.id, name: item.name, year: item.year, stat: item.stats[0].fgp})
+      break;
+    case '3p%':
+      statastics.push({index: item.index, id: item.id, name: item.name, year: item.year, stat: item.stats[0].fg3p})
+      break;
+    default:
+      break;
+  }
+}, []);
+
+
+let ids = statastics.map((item)=> item.id)
+
+let uniqueIds =  ids.filter(function(item, pos){
+  return ids.indexOf(item)== pos;
+});
+
+
+let trace = {}
+data = []
+
+for(let val of uniqueIds){
+  let temp = statastics.filter((item)=>{
+    if(val===item.id){
+      return item.id
+    }
+  })
+
+
+  let stat = temp.map((item)=> item.stat)
+
+  let NameAndYear = temp.map((item)=> `${item.name} ${item.year}`)
+
+  let name = temp.map((item)=> `${item.name}`)
+
+  let uniqueName =  name.filter(function (value, index, self) {
+      return self.indexOf(value) === index;
+  });
+
+  trace = {
+      id: val,
+      x: NameAndYear,
+      y: stat,
+      type: 'bar',
+      name: uniqueName[0].toString(),
+      width: .09
+  }
+
+  data.push(trace)
+
+}
+console.log(data);

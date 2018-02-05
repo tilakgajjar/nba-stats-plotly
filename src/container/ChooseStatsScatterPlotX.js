@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { addStatsForScatterPlotX } from '../actions'
 import { Dropdown } from 'semantic-ui-react'
+import { makeGetScatterXState } from '../selectors/scatterplot'
 
 class ChooseStatsScatterPlotX extends Component {
 
@@ -26,7 +27,7 @@ class ChooseStatsScatterPlotX extends Component {
            options={options}
            placeholder='Stats'
            selection
-           value={this.props.value}
+           value={this.props.statsScatterX}
            compact
          />
 
@@ -34,6 +35,16 @@ class ChooseStatsScatterPlotX extends Component {
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
+const makeMapStateToProps = () => {
 
-export default connect(mapStateToProps)(ChooseStatsScatterPlotX)
+ const getScatterX = makeGetScatterXState()
+ 
+ const mapStateToProps = (playerInfo) => {
+   return {
+      statsScatterX: getScatterX(playerInfo),
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(ChooseStatsScatterPlotX)

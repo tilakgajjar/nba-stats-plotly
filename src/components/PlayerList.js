@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Dropdown } from 'semantic-ui-react'
 import { fetchAllPlayerRequest } from '../actions'
 import { connect } from 'react-redux'
+import { makeGetPlayersListState } from '../selectors/playerlist'
 
+//List of Added Players
 class PlayerList extends Component {
   constructor(props) {
   super(props);
@@ -31,13 +33,23 @@ render(){
       fluid
       search
       selection
-      options={this.props.playerInfo.playerList}
+      options={this.props.playerList}
       onChange={this.props.onChange}
       />
     )
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
+const makeMapStateToProps = () => {
 
-export default connect(mapStateToProps)(PlayerList)
+ const getPlayerListState = makeGetPlayersListState()
+
+ const mapStateToProps = (playerInfo) => {
+   return {
+      playerList: getPlayerListState(playerInfo)
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(PlayerList)

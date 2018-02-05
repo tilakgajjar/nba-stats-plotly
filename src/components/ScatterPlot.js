@@ -3,111 +3,125 @@ import React from 'react';
 import { connect } from 'react-redux'
 import ChooseStatsScatterPlotX from '../container/ChooseStatsScatterPlotX'
 import ChooseStatsScatterPlotY from '../container/ChooseStatsScatterPlotY'
+import { makeGetScatterXState, makeGetScatterYState, makeGetStats } from '../selectors/scatterplot'
 
-let name = []
-let statasticsX = []
-let statasticsY = []
+let statisticsX = []
+let statisticsY = []
 let strX = ''
 let strY = ''
-
+let data = []
 
 class ScatterPlot extends React.Component {
 
-  drawPlot = () => {
+  drawScatterPlot = () => {
 
-    Plotly.newPlot('scatterplot', [{
-        x:  statasticsX,
-        y: statasticsY,
-        text: name,
-        type: 'scatter',
-        name: 'Primary Product',
-        mode: 'markers',
-        marker: {
-          color: 'rgb(49,130,189)',
-          opacity: 0.7,
-          size: 12
-        }
-    }], {
+    Plotly.newPlot('scatterplot', data , {
 
       xaxis: {
-
-        title: `${strX.toUpperCase()}`
+        title: `${strX.toUpperCase()}`,
+        tickfont: {
+          size: 10
+        }
       },
       yaxis: {
-
-        title: `${strY.toUpperCase()}`
+        title: `${strY.toUpperCase()}`,
+        tickfont: {
+          size: 10
+        }
       },
 
       }, {
-      displayModeBar: false
+        displayModeBar: false,
+        hovermode:'closest'
       });
   }
 
   componentDidMount() {
-    this.drawPlot();
+    this.drawScatterPlot();
   }
 
   componentDidUpdate() {
-    this.drawPlot();
+    this.drawScatterPlot();
   }
 
   render() {
-    const { playerInfo } = this.props
 
-    strX = playerInfo.statsScatterX
-    strY = playerInfo.statsScatterY
+    const { statsScatterX, statsScatterY, stats } = this.props
 
-    let items =  playerInfo.stats.map((item)=> { return item; });
+    strX = statsScatterX
+    strY = statsScatterY
 
-    name = []
-    statasticsX = []
-    statasticsY = []
+    let items =  stats.map((item)=> { return item; });
 
-    items.map((item) => {
-      name.push(item.name + ' ' + item.year);
-      switch (strX) {
-        case 'ppg':
-          statasticsX.push(item.stats[0].ppg)
-          break;
-        case 'apg':
-          statasticsX.push(item.stats[0].apg)
-          break;
-        case 'rpg':
-          statasticsX.push(item.stats[0].rpg)
-          break;
-        case 'fg%':
-          statasticsX.push(item.stats[0].fgp)
-          break;
-        case '3p%':
-          statasticsX.push(item.stats[0].fg3p)
-          break;
-        default:
-          break;
+    statisticsX = []
+    statisticsY = []
 
+    const getStatistics = (strX, strY) => {
+      statisticsX = items.map((item) => {
+         let Obj = {}
+         Obj = {index: item.index, id: item.id, name: item.name, year: item.year, stat: Number(item.stats[0][strX]).toFixed(3)}
+         return Obj
+      })
+
+      statisticsY = items.map((item) => {
+        let Obj = {}
+        Obj = {index: item.index, id: item.id, name: item.name, year: item.year, stat: Number(item.stats[0][strY]).toFixed(3)}
+        return Obj
+     })
+    }
+
+    if(strX!=='' && strY!==''){
+      getStatistics(strX, strY)
+    }
+
+    let ids = statisticsX.map((item)=> item.id)
+
+    let uniqueIds =  ids.filter(function(item, pos){
+      return ids.indexOf(item)===pos;
+    });
+
+
+    let trace = {}
+    data = []
+
+    for(let val of uniqueIds){
+      let tempX = statisticsX.filter((item)=>{
+        if(val===item.id){
+          return item.id
+        }
+      })
+
+      let statX = tempX.map((item)=> item.stat)
+
+      let NameAndYearX = tempX.map((item)=> `${item.name} ${item.year}`)
+
+      let name = tempX.map((item)=> `${item.name}`)
+
+      let uniqueName =  name.filter(function (value, index, self) {
+          return self.indexOf(value) === index;
+      });
+
+      let tempY = statisticsY.filter((item)=>{
+        if(val===item.id){
+          return item.id
+        }
+      })
+
+      let statY = tempY.map((item)=> item.stat)
+
+      trace = {
+          id: val,
+          x:  statX,
+          y: statY,
+          text: NameAndYearX,
+          mode: 'markers',
+          type: 'scatter',
+          name: uniqueName[0].toString(),
+          marker: { size: 10 },
+          hoverinfo: "x+y+text"
       }
-
-      switch (strY) {
-        case 'ppg':
-          statasticsY.push(item.stats[0].ppg)
-          break;
-        case 'apg':
-          statasticsY.push(item.stats[0].apg)
-          break;
-        case 'rpg':
-          statasticsY.push(item.stats[0].rpg)
-          break;
-        case 'fg%':
-          statasticsY.push(item.stats[0].fgp)
-          break;
-        case '3p%':
-          statasticsY.push(item.stats[0].fg3p)
-          break;
-        default:
-          break;
-
-      }
-
-    }, []);
+      data.push(trace)
+    }
 
     return (
       <div>
@@ -125,6 +139,21 @@ class ScatterPlot extends React.Component {
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
 
-export default connect(mapStateToProps)(ScatterPlot)
+const makeMapStateToProps = () => {
+
+ const getScatterX = makeGetScatterXState()
+ const getScatterY = makeGetScatterYState()
+ const getStatsState = makeGetStats()
+
+ const mapStateToProps = (playerInfo) => {
+   return {
+      statsScatterX: getScatterX(playerInfo),
+      statsScatterY: getScatterY(playerInfo),
+      stats: getStatsState(playerInfo)
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(ScatterPlot)

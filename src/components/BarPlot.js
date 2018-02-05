@@ -2,92 +2,132 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import ChooseStatsBarPlotX from '../container/ChooseStatsBarPlotX'
+import { makeGetBarState, makeGetStatsState } from '../selectors/barplot'
 
-let name = []
-let statastics = []
+let statistics = []
 let str = ''
+let data = []
 
 class BarPlot extends React.Component {
 
-  drawPlot = () => {
+  drawBarPlot = () => {
 
-    Plotly.newPlot('plot', [{
-        x: name,
-        y: statastics,
-        type: 'bar',
-        name: 'Primary Product',
-        width: .09,
-        marker: {
-          color: 'rgb(49,130,189)',
-          opacity: 0.7,
-        }
-    }], {
+    Plotly.newPlot('plot', data, {
       xaxis: {
         gridcolor: 'transparent',
         title: 'Player Name and Year',
         tickfont: {
-          size: 10,
-          color: 'rgb(107, 107, 107)'
+          size: 10
         }
       },
       yaxis: {
-        range: [0,50],
-        title: `${str.toUpperCase()}`
+        title: `${str.toUpperCase()}`,
+        tickfont: {
+          size: 10
+        }
       },
 
     }, {
-      displayModeBar: false
+      displayModeBar: false,
+      hovermode:'closest'
     });
   }
 
   componentDidMount() {
-    this.drawPlot();
+    this.drawBarPlot();
   }
 
   componentDidUpdate() {
-    this.drawPlot();
+    this.drawBarPlot();
   }
 
   render() {
-    const { playerInfo } = this.props
-    str = playerInfo.statsBar
-    name = []
-    statastics = []
 
-    let items =  playerInfo.stats.map((item)=> { return item; });
+    const { statsBar, stats } = this.props
 
-    items.map((item) => {
-      name.push(item.name + ' ' + item.year);
-      switch (str) {
-        case 'ppg':
-          statastics.push(item.stats[0].ppg)
-          break;
-        case 'apg':
-          statastics.push(item.stats[0].apg)
-          break;
-        case 'rpg':
-          statastics.push(item.stats[0].rpg)
-          break;
-        case 'fg%':
-          statastics.push(item.stats[0].fgp)
-          break;
-        case '3p%':
-          statastics.push(item.stats[0].fg3p)
-          break;
-        default:
-          break;
+    str = statsBar
+    statistics = []
+
+    let items =  stats.map((item)=> { return item; });
+
+    const getStatistics = (str) => {
+      statistics = items.map((item) => {
+         let Obj = {}
+         Obj = {index: item.index, id: item.id, name: item.name, year: item.year, stat: Number(item.stats[0][str]).toFixed(3)}
+         return Obj
+      })
+    }
+
+    if(str!==''){
+      getStatistics(str)
+    }
+
+    let ids = statistics.map((item)=> item.id)
+
+    let uniqueIds =  ids.filter(function(item, pos){
+      return ids.indexOf(item)=== pos;
+    });
+
+
+    let trace = {}
+    data = []
+
+    for(let val of uniqueIds){
+      let temp = statistics.filter((item)=>{
+        if(val===item.id){
+          return item.id
+        }
+      })
+
+
+      let stat = temp.map((item)=> item.stat)
+
+      let NameAndYear = temp.map((item)=> `${item.name} ${item.year}`)
+
+      let name = temp.map((item)=> `${item.name}`)
+
+      let uniqueName =  name.filter(function (value, index, self) {
+          return self.indexOf(value) === index;
+      });
+
+      trace = {
+          id: val,
+          x: NameAndYear,
+          y: stat,
+          mode: 'markers',
+          type: 'bar',
+          name: uniqueName[0].toString(),
+          width: .09,
+          hoverinfo: "x+y"
       }
-    }, []);
+
+      data.push(trace)
+
+    }
 
     return (
       <div>
-        <div style={{marginTop: '10px'}}>Choose Stats: <ChooseStatsBarPlotX /></div>
+        <div style={{marginTop: '10px'}}>
+          Choose Stats: <ChooseStatsBarPlotX />
+        </div>
         <div id="plot"></div>
       </div>
     );
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
+const makeMapStateToProps = () => {
 
-export default connect(mapStateToProps)(BarPlot)
+ const getBarState = makeGetBarState()
+ const getStatsState = makeGetStatsState()
+
+ const mapStateToProps = (playerInfo) => {
+   return {
+      statsBar: getBarState(playerInfo),
+      stats: getStatsState(playerInfo)
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(BarPlot)

@@ -3,6 +3,7 @@ import { Form, Input, Button, Label } from 'semantic-ui-react'
 import logo from '../logo.jpg';
 import PlayerList from './PlayerList'
 
+//Year Input and Add Player Button
 class NBAForm extends Component {
   constructor(props) {
   super(props);
@@ -51,27 +52,55 @@ onSubmit = (e) => {
 
     if(playerInfo.err.yearInputErr){
       yearInput =  <Form.Field>
-                      <Label size='mini' color='red' pointing='below'>Invalid Year</Label>
-                      <Input fluid size='small' type="number" name="year"  style={{ marginBottom: '1em' }}   placeholder='Year' />
+                      <Label
+                        size='mini'
+                        color='red'
+                        pointing='below'>Invalid Year</Label>
+                      <Input
+                        fluid
+                        size='small'
+                        type="number"
+                        name="year"
+                        style={{ marginBottom: '1em' }}
+                        placeholder='Year' />
                    </Form.Field>
     } else {
       yearInput = <Form.Field>
-                      <Label size='mini' pointing='below' color='basic' style={{  color: 'white', border: '0px' }}> ABCD </Label>
-                      <Input fluid size='small' type="number" name="year"  style={{ marginBottom: '1em' }}   placeholder='Year' />
+                      <Label
+                        size='mini'
+                        pointing='below'
+                        color='basic'
+                        style={{  color: 'white', border: '0px' }}> ABCD </Label>
+                      <Input
+                        fluid
+                        size='small'
+                        type="number"
+                        name="year"
+                        style={{ marginBottom: '1em' }}
+                        placeholder='Year' />
                   </Form.Field>
     }
 
     if(playerInfo.showLoader){
-      addButton = <Button loading fluid color="black" type="submit" onClick={this.onSubmit}>Add Player</Button>
+      addButton = <Button
+                    loading
+                    fluid
+                    color="black"
+                    type="submit"
+                    onClick={this.onSubmit}>Add Player</Button>
     }else {
-      addButton = <Button fluid color="black" type="submit" onClick={this.onSubmit}>Add Player</Button>
+      addButton = <Button
+                    fluid
+                    color="black"
+                    type="submit"
+                    onClick={this.onSubmit}>Add Player</Button>
     }
 
 
     return (
       <div className="App" align='center'>
           <img src={logo} className="App-logo" alt="logo" />
-          <Form onSubmit={this.onSubmit} >
+          <Form onSubmit={this.onSubmit}>
             <div>
               <PlayerList onChange={this.onChange.bind(this)}/>
               {yearInput}

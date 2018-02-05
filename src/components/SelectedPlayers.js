@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import { Table, Icon } from 'semantic-ui-react'
 import { connect } from 'react-redux'
 import { removePlayer } from '../actions'
+import { makeGetPlayersStatsState } from '../selectors/selectedplayers'
 
 class SelectedPlayers extends Component {
 
   render(){
 
-  const {playerInfo, dispatch} = this.props
+  const {stats, dispatch} = this.props
 
   return(
       <div style={{marginTop: '10px'}}>
@@ -24,7 +25,7 @@ class SelectedPlayers extends Component {
                     <Icon color='basic' style={{color:'white', border:'0px'}} name='remove circle' />
                   </Table.Cell>
                 </Table.Row>
-                {playerInfo.stats.map((player, i) =>
+                {stats.map((player, i) =>
                 <Table.Row key={i}>
                   <Table.Cell>
                     {player.name}
@@ -43,6 +44,16 @@ class SelectedPlayers extends Component {
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
+const makeMapStateToProps = () => {
 
-export default connect(mapStateToProps)(SelectedPlayers)
+ const getStatsState = makeGetPlayersStatsState()
+
+ const mapStateToProps = (playerInfo) => {
+   return {
+      stats: getStatsState(playerInfo)
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(SelectedPlayers)

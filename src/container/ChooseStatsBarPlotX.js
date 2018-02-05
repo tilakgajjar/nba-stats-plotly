@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { addStatsForBarPlot } from '../actions'
 import { Dropdown } from 'semantic-ui-react'
+import { makeGetBarState } from '../selectors/barplot'
 
 class ChooseStatsBarPlotX extends Component {
 
@@ -26,7 +27,7 @@ class ChooseStatsBarPlotX extends Component {
            options={options}
            placeholder='Stats'
            selection
-           value={this.props.value}
+           value={this.props.statsBar}
            compact
          />
 
@@ -34,6 +35,17 @@ class ChooseStatsBarPlotX extends Component {
   }
 }
 
-const mapStateToProps = ({playerInfo}) => ({playerInfo})
 
-export default connect(mapStateToProps)(ChooseStatsBarPlotX)
+const makeMapStateToProps = () => {
+
+ const getBarState = makeGetBarState()
+
+ const mapStateToProps = (playerInfo) => {
+   return {
+      statsBar: getBarState(playerInfo)
+   }
+  }
+ return mapStateToProps
+}
+
+export default connect(makeMapStateToProps)(ChooseStatsBarPlotX)
